@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<GameConfig 
+	ChunkActivationRange="250"
+	UseDefaultShader ="false"
+	FogOff ="false"
+	DayNightCycleOff="false"
+	DebugStepLightPropogation ="false"
+	DebugActiveChunks="false"
+	SpawnRaycasts ="true"
+	RaycastDistance ="8"
+	LightningOff="false"
+	RedAndGreenWorld="false"
+	DebugMovement="false"
+	DebugCamera ="false"
+	ProfilingOn ="false"
+	WorldSeed ="34"
+	PlayerPhysicsDisabled ="false"
+/>

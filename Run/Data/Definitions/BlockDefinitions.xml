@@ -1,0 +1,30 @@
+<Definitions>
+	<BlockDefinition name="Air" isSolid="false" isOpaque ="false" isVisible="false" />
+	<BlockDefinition name="Grass" isSolid="true" isOpaque ="true" isVisible="true" light ="0" floorWallUV="32,34" sideWallUV ="33,33" topWallUV="32,33"/>
+	<BlockDefinition name="Dirt" isSolid="true" isOpaque ="true" isVisible="true" light ="0"  floorWallUV="32,34" sideWallUV ="32,34" topWallUV="32,34"/>
+	<BlockDefinition name="Stone" isSolid="true" isOpaque ="true" isVisible="true" light ="0"  floorWallUV="33,32" sideWallUV ="33,32" topWallUV="33,32"/>
+	<BlockDefinition name="Brick" isSolid="true" isOpaque ="true" isVisible="true" light ="0" floorWallUV="34,32" sideWallUV ="34,32" topWallUV="34,32"/>
+	<BlockDefinition name="Glowstone" isSolid="true" isOpaque ="true" isVisible="true" light ="15" floorWallUV="46,34" sideWallUV ="46,34" topWallUV="46,34"/>
+	<BlockDefinition name="Diamond" isSolid="true" isOpaque ="true" isVisible="true" light ="0" floorWallUV="63,37" sideWallUV ="63,37" topWallUV="63,37"/>
+	<BlockDefinition name="Iron" isSolid="true" isOpaque ="true" isVisible="true" light ="0" floorWallUV="63,35" sideWallUV ="63,35" topWallUV="63,35"/>
+	<BlockDefinition name="BlueSpecular" isSolid="true" isOpaque ="true" isVisible="true" light ="0" floorWallUV="62,37" sideWallUV ="62,37" topWallUV="62,37" isSpecular ="true"/>
+	<BlockDefinition name="Gold" isSolid="true" isOpaque ="true" isVisible="true" light ="0" floorWallUV="63,36" sideWallUV ="63,36" topWallUV="63,36"/>
+	<BlockDefinition name="Water" isSolid="true" isOpaque ="false" isVisible="true" light ="0" floorWallUV="32,44" sideWallUV ="32,44" topWallUV="32,44"/>
+	<BlockDefinition name="Sand" isSolid="true" isOpaque ="true" isVisible="true" light ="0" floorWallUV="34,34" sideWallUV ="34,34" topWallUV="34,34"/>
+	<BlockDefinition name="Torch" isSolid="true" isOpaque ="false" isVisible="true" light ="0" floorWallUV="31,31" sideWallUV ="32,31" topWallUV="48,43" torchMins="0.50634765625, 0.49951171875" torchMaxs="0.5087890625, 0.484375"/>
+	<BlockDefinition name="Leaves" isSolid="true" isOpaque ="true" isVisible="true" light ="0" floorWallUV="32,35" sideWallUV ="32,35" topWallUV="32,35"/>
+	<BlockDefinition name="OakLog" isSolid="true" isOpaque ="true" isVisible="true" light ="0" floorWallUV="38,33" sideWallUV ="36,33" topWallUV="38,33"/>
+	<BlockDefinition name="Lava" isSolid="true" isOpaque ="true" isVisible="true" light ="0" floorWallUV="48,43" sideWallUV ="48,43" topWallUV="48,43"/>
+	<BlockDefinition name="DarkBrownBlock" isSolid="true" isOpaque ="true" isVisible="true" light ="0" floorWallUV="40,33" sideWallUV ="40,33" topWallUV="40,33"/>
+	<BlockDefinition name="GoodWood" isSolid="true" isOpaque ="true" isVisible="true" light ="0" floorWallUV="52,33" sideWallUV ="52,33" topWallUV="52,33"/>
+	<BlockDefinition name="GreyBrick" isSolid="true" isOpaque ="true" isVisible="true" light ="0" floorWallUV="59,32" sideWallUV ="59,32" topWallUV="59,32"/>
+	<BlockDefinition name="BrownBlock" isSolid="true" isOpaque ="true" isVisible="true" light ="0" floorWallUV="32,32" sideWallUV ="32,32" topWallUV="32,32"/>
+	<BlockDefinition name="GreyBlock" isSolid="true" isOpaque ="true" isVisible="true" light ="0" floorWallUV="33,32" sideWallUV ="33,32" topWallUV="33,32"/>
+	<BlockDefinition name="Coal" isSolid="true" isOpaque ="true" isVisible="true" light ="0" floorWallUV="63,34" sideWallUV ="63,34" topWallUV="63,34"/>
+	<BlockDefinition name="Ice" isSolid="true" isOpaque ="true" isVisible="true" light ="0" floorWallUV="36,35" sideWallUV ="36,35" topWallUV="36,35"/>
+	<BlockDefinition name="FrontTorch" isSolid="true" isOpaque ="false" isVisible="true" light ="0" floorWallUV="31,31" sideWallUV ="32,31" topWallUV="48,43" torchMins="0.50634765625, 0.49951171875" torchMaxs="0.5087890625, 0.484375"/>
+	<BlockDefinition name="BackTorch" isSolid="true" isOpaque ="false" isVisible="true" light ="0" floorWallUV="31,31" sideWallUV ="32,31" topWallUV="48,43" torchMins="0.50634765625, 0.49951171875" torchMaxs="0.5087890625, 0.484375"/>
+	<BlockDefinition name="LeftTorch" isSolid="true" isOpaque ="false" isVisible="true" light ="0" floorWallUV="31,31" sideWallUV ="32,31" topWallUV="48,43" torchMins="0.50634765625, 0.49951171875" torchMaxs="0.5087890625, 0.484375"/>
+	<BlockDefinition name="RightTorch" isSolid="true" isOpaque ="false" isVisible="true" light ="0" floorWallUV="31,31" sideWallUV ="32,31" topWallUV="48,43" torchMins="0.50634765625, 0.49951171875" torchMaxs="0.5087890625, 0.484375"/>
+
+</Definitions>

@@ -1,0 +1,1 @@
+#include "Game/BlockTemplate.hpp"
