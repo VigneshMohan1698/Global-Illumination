@@ -179,7 +179,7 @@ void Chunk::CreateInitialChunkBlocks()
 				{
 					blockDefinition = BlockDefinition::GetByName("Air");
 				}
-				if (z >= 0 && z < SEA_LEVEL - 4 && z < terrainHeightZ)
+				if (z >= 0 && z < SEA_LEVEL - 6 && z < terrainHeightZ)
 				{
 					if (rng.GetRandomIntInRange(1, 1000) == 1)
 					{
@@ -198,7 +198,7 @@ void Chunk::CreateInitialChunkBlocks()
 						blockDefinition = coal;
 					}
 				}
-				if (z < SEA_LEVEL && z > SEA_LEVEL - 2)
+				if (z < SEA_LEVEL && z > SEA_LEVEL - 5)
 				{
 					blockDefinition = water;
 				}

@@ -46,7 +46,7 @@ uint InitializeRandomForHemisphereSampling(uint val0, uint val1, uint backoff = 
 float3 CosineHemisphereSample(inout uint randSeed, float3 hitNorm)
 {
 	float2 randVal = float2(nextRand(randSeed), nextRand(randSeed));
-	bool isCosineWeighted = g_sceneCB.lightfallOff_AmbientIntensity_CosineSampling.z;
+	bool isCosineWeighted = g_sceneCB.lightfallOff_AmbientIntensity_CosineSampling_DayNight.z;
 	if (isCosineWeighted)
 	{
 		
@@ -452,6 +452,7 @@ void GIClosestHitShader(inout GIRayPayload payload, in BuiltInTriangleIntersecti
 		{
 			payload.DidHitEmissiveSurface = true;
 			payload.GlobalIllumination = float4(data.colors.rgb, 1);
+			payload.IndirectAlbedo = data.colors;
 			return;
 		}
 		else
@@ -465,6 +466,7 @@ void GIClosestHitShader(inout GIRayPayload payload, in BuiltInTriangleIntersecti
 	{
 		payload.DidHitEmissiveSurface = true;
 		payload.GlobalIllumination = float4(data.colors.rgb, 1);
+		payload.IndirectAlbedo = data.colors;
 		payload.tHit = RayTCurrent();
 		return;
 	}
@@ -498,16 +500,16 @@ void GIClosestHitShader(inout GIRayPayload payload, in BuiltInTriangleIntersecti
 		float3 randomRaySamplingDirection;
 		//randomRaySamplingDirection = GetRandomRayDirection(dispatchRayIndex, data.hitPosition, data.triangleNormal, texDimensions, payload.ReflectionIndex);
 		//randomRaySamplingDirection = GetReflectedPlane(-WorldRayDirection(), data.triangleNormal);
-		//bool isSurfaceSpecular = GBufferAlbedo[dispatchRayIndex].a == 1.0f;
-		//if (isSurfaceSpecular)
-		//{
-		//	randomRaySamplingDirection = SpecularHemisphereSample(rand, data.triangleNormal, data.hitPosition);
-		//}
-		//else
-		//{
-		//	randomRaySamplingDirection = CosineHemisphereSample(rand, data.triangleNormal);
-		//}
-		randomRaySamplingDirection = CosineHemisphereSample(rand, data.triangleNormal);
+		bool isSurfaceSpecular = (data.colors.w == 0.0f && data.colors.z != 0.0f);
+		if (isSurfaceSpecular)
+		{
+			randomRaySamplingDirection = SpecularHemisphereSample(rand, data.triangleNormal, data.hitPosition);
+		}
+		else
+		{
+			randomRaySamplingDirection = CosineHemisphereSample(rand, data.triangleNormal);
+		}
+		//randomRaySamplingDirection = CosineHemisphereSample(rand, data.triangleNormal);
 		float fNDotL = max(0.01f, dot(randomRaySamplingDirection, data.triangleNormal));
 		RayDesc ray;
 		ray.Origin = data.hitPosition + (randomRaySamplingDirection * 0.001f);
@@ -521,7 +523,7 @@ void GIClosestHitShader(inout GIRayPayload payload, in BuiltInTriangleIntersecti
 		payloadIndirect.ReflectionIndex = payload.ReflectionIndex + 1;
 		TraceRay(Scene, 0, ~0, 0, 1, 0, ray, payloadIndirect);
 
-		float reflectionFalloff = pow((1 - g_sceneCB.lightfallOff_AmbientIntensity_CosineSampling.x), payload.ReflectionIndex);
+		float reflectionFalloff = pow((1 - g_sceneCB.lightfallOff_AmbientIntensity_CosineSampling_DayNight.x), payload.ReflectionIndex);
 		globalIllumination += (payloadIndirect.GlobalIllumination /*/ (fNDotL / PI)*/) * fNDotL * reflectionFalloff;
 
 	}
@@ -542,7 +544,7 @@ void GIMissShader(inout GIRayPayload payload)
 	{
 		return;
 	}
-	float4 background = g_sceneCB.GIColor * g_sceneCB.lightfallOff_AmbientIntensity_CosineSampling.y;
+	float4 background = g_sceneCB.GIColor * g_sceneCB.lightfallOff_AmbientIntensity_CosineSampling_DayNight.y;
 	background.a = 0.0f;
 	payload.tHit = -1.0f;
 	//payload.GlobalIllumination = g_sceneCB.GIColor * 0.5f;
@@ -551,4 +553,5 @@ void GIMissShader(inout GIRayPayload payload)
 		payload.GlobalIllumination = background;
 	}
 	payload.DidHitEmissiveSurface = false;
+	payload.IndirectAlbedo = background;
 }

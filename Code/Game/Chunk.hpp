@@ -79,7 +79,7 @@ public:
 	int							m_totalChunkVerts = 0;
 	bool						m_needsSaving = false;
 	float						m_perlinNoiseMultiplier = 30.0f;
-	unsigned int				m_worldSeed = 0;
+	unsigned int				m_worldSeed = 34;
 	bool						m_loadedFromSaves = false;
 public:
 	void						GenerateBlocks();

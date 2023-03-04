@@ -81,6 +81,7 @@ void Game::InitializeRaytracing()
 	g_theRenderer->LoadTexture("MinecraftTextureWICT", "Data/Images/BasicSprites_64x64.png", TextureType::WICT);
 	g_theRenderer->LoadTexture("MinecraftTextureWICTNormal", "Data/Images/BasicSprites_64x64NormalMap2.png", TextureType::WICT);
 	g_theRenderer->LoadTexture("MinecraftSkyboxWICT", "Data/Images/Skybox.png", TextureType::WICT);
+	g_theRenderer->LoadTexture("MinecraftSkyboxNightWICT", "Data/Images/Skybox_Night.png", TextureType::WICT);
 	g_theRenderer->LoadTexture("MinecraftWICTSpecular", "Data/Images/SpecularMapMinecraft.png", TextureType::WICT);
 	//g_theRenderer->InitializeSampler();
 	g_theRenderer->InitializeGlobalIllumination();
@@ -109,7 +110,7 @@ void Game::InitializeImGui()
 	m_imGUI.m_thesisVariables.m_godRaysOn = true;
 	m_imGUI.m_thesisVariables.m_temporalFade = 0.1f;
 	m_imGUI.m_thesisVariables.m_lightFallof = 0.01f;
-	m_imGUI.m_thesisVariables.m_textureMappings = Vec4(0.0f,0.0f,1.0f,0.0f);
+	m_imGUI.m_thesisVariables.m_textureMappings = Vec4(0.0f,0.0f,1.0f,1.0f);
 	m_imGUI.m_thesisVariables.m_ambientIntensity = 0.1f;
 }
 
@@ -402,9 +403,10 @@ void Game::UpdateSceneConstants()
 	g_theRenderer->m_gameValues.textureMappings = m_imGUI.m_thesisVariables.m_textureMappings;
 
 
-	g_theRenderer->m_gameValues.lightfallOff_AmbientIntensity_CosineSampling.x = m_imGUI.m_thesisVariables.m_lightFallof;
-	g_theRenderer->m_gameValues.lightfallOff_AmbientIntensity_CosineSampling.y = m_imGUI.m_thesisVariables.m_ambientIntensity;
-	g_theRenderer->m_gameValues.lightfallOff_AmbientIntensity_CosineSampling.z = m_imGUI.m_thesisVariables.m_samplingMode;
+	g_theRenderer->m_gameValues.lightfallOff_AmbientIntensity_CosineSampling_DayNight.x = m_imGUI.m_thesisVariables.m_lightFallof;
+	g_theRenderer->m_gameValues.lightfallOff_AmbientIntensity_CosineSampling_DayNight.y = m_imGUI.m_thesisVariables.m_ambientIntensity;
+	g_theRenderer->m_gameValues.lightfallOff_AmbientIntensity_CosineSampling_DayNight.z = m_imGUI.m_thesisVariables.m_samplingMode;
+	g_theRenderer->m_gameValues.lightfallOff_AmbientIntensity_CosineSampling_DayNight.w = m_imGUI.m_thesisVariables.m_dayNight;
 	g_theRenderer->m_compositor->m_renderOutput = m_imGUI.m_thesisVariables.m_renderOutput;
 	g_theRenderer->m_denoiser->SetFilterSize(kernelSize);
 	g_theRenderer->m_denoiser->m_denoiserType = m_imGUI.m_thesisVariables.m_denoiserType == 0 ? 

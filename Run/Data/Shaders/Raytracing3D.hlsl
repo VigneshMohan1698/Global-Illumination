@@ -23,7 +23,8 @@ StructuredBuffer<Vertex_PNCUTB>  Vertices			  :    register(t2, space0);
 Texture2D                       DiffuseTexture        :   register(t3, space0);
 Texture2D                       NormalMapTexture      :   register(t5, space0);
 Texture2D                       SkyboxTexture         :   register(t6, space0);
-Texture2D                       SpecularTexture       :   register(t7, space0);
+Texture2D                       SkyboxNightTexture    :   register(t7, space0);
+Texture2D                       SpecularTexture       :   register(t8, space0);
 SamplerState                    SimpleSampler         :   register(s0);
 //SamplerState                    NormalSampler         :  register(s1);
 
@@ -326,7 +327,7 @@ void GetHitData(out HitData data, BuiltInTriangleIntersectionAttributes attr)
 	float3 finalNormal = float3(0, 0, 0);
 	data.traingleUV = HitAttribute(vertexUvs, attr);
 	data.colors = HitAttributeColor(color, attr);
-	float4 waterColor = float4(90, 188, 216, 255) / 255;
+	float4 waterColor = float4(14, 135, 204, 255) /  255;
 	bool isWater = false;
 	data.triangleNormal = inputFaceNormal;
 	if (data.colors.y != 0.0f && data.colors.w == 0.0f)
@@ -408,6 +409,8 @@ float2 CalculateMotionVectorNDC(float3 hitPosition)
 		
 	const float epsilon = 1e-5f;
 	outMotionVector = (previousClipPosition.w < epsilon) ? float2(0, 0) : outMotionVector;
+	//const float epsilon = 1e-5f;
+	//outMotionVector = (previousClipPosition.w < epsilon) ? float2(0, 0) : outMotionVector;
 	return outMotionVector;
 }
 
@@ -530,7 +533,6 @@ void MyClosestHitShader(inout RayPayload payload, in BuiltInTriangleIntersection
 		return;
 	}
 	
-
 	float2 dimensions = DispatchRaysIndex().xy;
 	HitData data;
 	data.Initialize();
@@ -539,7 +541,29 @@ void MyClosestHitShader(inout RayPayload payload, in BuiltInTriangleIntersection
 	//--------------WATER RAY EARLY OUT-----------------
 	if (payload.raytype == 3)
 	{
-		payload.color = data.diffuseAlbedo;
+		if (data.colors.y != 0.0f && data.colors.w == 0.0f)
+		{
+			//payload.color += data.diffuseAlbedo / 2.0f;
+			
+			RayPayload waterPayload;
+			waterPayload.color = float4(0, 0, 0, 0);
+			waterPayload.reflectionIndex = payload.reflectionIndex + 1.0f;
+			waterPayload.raytype = 3;
+			waterPayload.startDirection = payload.startDirection;
+			waterPayload.tHit = -1.0f;
+			
+			RayDesc waterRefractedRay;
+			waterRefractedRay.Origin = data.hitPosition + payload.startDirection * 0.001f;
+			waterRefractedRay.Direction = payload.startDirection;
+			waterRefractedRay.TMin = RAYMIN;
+			waterRefractedRay.TMax = RAYMAX;
+			TraceRay(Scene, 0, ~0, 0, 1, 0, waterRefractedRay, waterPayload);
+			payload.color += waterPayload.color;
+		}
+		else
+		{
+			payload.color = data.diffuseAlbedo ;
+		}
 		return;
 	}
 	bool isInShadow = CheckIfISInShadow(data.hitPosition.xyz);
@@ -558,15 +582,16 @@ void MyClosestHitShader(inout RayPayload payload, in BuiltInTriangleIntersection
 	}
 
 	//-----------------------------------WRITING DATA TO G BUFFER-------------------------------------
-	if(g_sceneCB.lightBools.w !=0.0f)
+	if (g_sceneCB.lightBools.w != 0.0f)
 	{
 		GBufferDirectLight[dimensions] = DirectLight;
 	}
 
 	if (data.colors.w != 0.0f)
 	{
-		GBufferDirectLight[dimensions] = float4(1,1,1,1);
+		GBufferDirectLight[dimensions] = float4(1, 1, 1, 1);
 	}
+	
 	GBufferVertexAlbedo[dimensions] = data.diffuseAlbedo;
 	float4 waterColor = data.diffuseAlbedo;
 	if (data.colors.y != 0.0f && data.colors.w == 0.0f && (g_sceneCB.textureMappings.z || g_sceneCB.textureMappings.w))
@@ -592,7 +617,7 @@ void MyClosestHitShader(inout RayPayload payload, in BuiltInTriangleIntersection
 			waterColor += waterPayload.color * 0.3f;
 		}
 		if (g_sceneCB.textureMappings.z)  // Water reflections On
-		{		
+		{
 			RayDesc waterReflectedRay;
 			waterReflectedRay.Origin = data.hitPosition + reflectedRay * 0.001f;
 			waterReflectedRay.Direction = reflectedRay;
@@ -608,7 +633,7 @@ void MyClosestHitShader(inout RayPayload payload, in BuiltInTriangleIntersection
 			TraceRay(Scene, 0, ~0, 0, 1, 0, waterReflectedRay, waterPayload);
 			waterColor += waterPayload.color * 0.8f;
 		}
-	}	
+	}
 	GBufferVertexAlbedo[dimensions] = saturate(waterColor);
 	GbufferVertexPosition[dimensions] = float4(data.hitPosition, 1.0f);
 	GBufferVertexNormal[dimensions] = float4(data.triangleNormal, 1.0f);
@@ -617,18 +642,21 @@ void MyClosestHitShader(inout RayPayload payload, in BuiltInTriangleIntersection
 	GenerateCameraRayAtOrigin(cameraDirection);
 	float depth = RayTCurrent() * dot(payload.startDirection, cameraDirection);
 	//depth = RayTCurrent();
-	GBufferDepth[dimensions] = depth/*/120.0f*/; // Far plane
+	GBufferDepth[dimensions] = depth /*/120.0f*/; // Far plane
 	payload.tHit = RayTCurrent();
 	//if (data.diffuseAlbedo.a != 0.0f)
 	//{
 	//	ReportHit();
 	//}
-
 }
 
 [shader("miss")]
 void MyMissShader(inout RayPayload payload)
 {
+	if(payload.raytype == 3)
+	{
+		return;
+	}
 	float2 dimensions = DispatchRaysIndex().xy;
 	float4 background = float4(0, 0.3, 0.5, 0.0f);
 	background = EnvironmentTexture(payload.startDirection);
@@ -639,9 +667,24 @@ void MyMissShader(inout RayPayload payload)
 	bool sun = CanSeeSun(payload.startDirection, weight);
 	if(sun)
 	{
-		GBufferOcclusion[dimensions] = g_sceneCB.GIColor;
-		GBufferVertexAlbedo[dimensions] = g_sceneCB.GIColor;
+		GBufferOcclusion[dimensions] = float4(1, 1, 1, 1);
+		GBufferVertexAlbedo[dimensions] = float4(1, 1, 1, 1);
 	}
 	
 	payload.tHit = -1.0f;
+}
+
+
+[shader("anyhit")]
+void MyAnyHitShader(inout RayPayload payload, in BuiltInTriangleIntersectionAttributes attr)
+{
+	HitData data;
+	data.Initialize();
+	GetHitData(data, attr);
+	float2 dimensions = DispatchRaysIndex().xy;
+	payload.color += float4(1, 1, 1, 1);
+	GBufferVertexAlbedo[dimensions] = payload.color;
+
+	GbufferVertexPosition[dimensions] = float4(data.hitPosition, 1.0f);
+	GBufferVertexNormal[dimensions] = float4(data.triangleNormal, 1.0f);
 }

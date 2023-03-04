@@ -1,10 +1,10 @@
 #include "DataStructures.hlsli"
 #include "MathFunctions.hlsli"
 
-Texture2D<float4> g_DIInput : register(t0);
-Texture2D<float4> g_AlbedoInput : register(t1);
-Texture2D<float4> g_NormalInput : register(t2);
-Texture2D<float4> g_GIInput : register(t3);
+Texture2D<float4> g_GIInput : register(t0);
+Texture2D<float4> g_DIInput : register(t1);
+Texture2D<float4> g_AlbedoInput : register(t2);
+Texture2D<float4> g_NormalInput : register(t3);
 
 RWTexture2D<float4> g_output : register(u0);
 ConstantBuffer<DenoiserData> denoiserData : register(b0);
@@ -47,6 +47,7 @@ static const float weights3X3[3][3] =
 void main(uint2 DTid : SV_DispatchThreadID)
 {
 	float4 blurredGI = g_GIInput[DTid];
+	g_output[DTid] = float4(0, 0, 0, 0);
 	float4 blurredValues = float4(0, 0, 0, 0);
 	float averageSum = 1.0f;
 	int kernelOffsetSize = floor(denoiserData.kernelSize / 2.0f);
@@ -58,8 +59,8 @@ void main(uint2 DTid : SV_DispatchThreadID)
 		{
 			uint2 indexOffset = uint2(i, j);
 			bool isWithinDimensions = GetIsWithinDimesions(DTid + indexOffset, denoiserData.textureDim);
-			bool isSameNormal = GetIsEqual(g_NormalInput[DTid].xyz, g_NormalInput[DTid + indexOffset].xyz);
-			if (isSameNormal && isWithinDimensions)
+			//bool isSameNormal = GetIsEqual(g_NormalInput[DTid].xyz, g_NormalInput[DTid + indexOffset].xyz);
+			if (/*isSameNormal &&*/ isWithinDimensions)
 			{
 				if (kernelSize == 3)
 				{
@@ -92,5 +93,5 @@ void main(uint2 DTid : SV_DispatchThreadID)
 
 	//g_output[DTid] = dot(samples, weights);
 	g_output[DTid] = blurredValues;
-	g_output[DTid].a = 1.0f;
+	g_output[DTid].a = 0.0f;
 }

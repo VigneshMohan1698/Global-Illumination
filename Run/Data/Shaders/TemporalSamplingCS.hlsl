@@ -140,7 +140,7 @@ bool CheckPreviousSample(uint2 DTid, out float4 previousIndirect, out float2 pre
 [numthreads(8,8,1)]
 void main(uint2 DTid : SV_DispatchThreadID)
 {
-	float temporalAccumulationFactor = denoiserData.temporalFade;
+	float temporalAccumulationFactor = denoiserData.temporalFadeVarianceEstimation.x;
 	float momentsAccumulationFactor = 0.2f;
 	
 	float4 currentGI = g_GIInput[DTid];

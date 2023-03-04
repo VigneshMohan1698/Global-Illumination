@@ -105,7 +105,6 @@ float CalculateVarianceWeight(uint2 DTid, uint2 offsetPixel)
 	//float exponentialComponent = max(t, 0.0);
 	//weight = min(exp(-(exponentialComponent) / weightSigma), 1.0);
 	//return weight;
-	
 	float weight;
 	float weightSigma = 4.0f;
 	float epsilon = 0.01f;
@@ -116,6 +115,7 @@ float CalculateVarianceWeight(uint2 DTid, uint2 offsetPixel)
 	float gradient = (weightSigma * variance) + epsilon;
 	weight = exp(t / gradient);
 	return weight;
+
 }
 
 [numthreads(8, 8, 1)]
@@ -160,14 +160,19 @@ void main(uint2 DTid : SV_DispatchThreadID)
 				float colorWeight = CalculateColorWeight(DTid, DTid + indexOffset);
 				float depthWeight = CalculateDepthWeight(DTid, DTid + indexOffset);
 				varianceWeight = CalculateVarianceWeight(DTid, DTid + indexOffset);
-				//varianceWeight = varianceCenter;
 				float kernelWeight = (AtrousFilterKernel[ikernel] + AtrousFilterKernel[jkernel]) / 2.0f;
-				float totalWeight;
-				totalWeight = normalWeight * depthWeight /** positionWeight*/ /* * kernelWeight*/ * varianceWeight;
+				float totalWeight = 0.0f;
+				if (denoiserData.temporalFadeVarianceEstimation.y == 1.0f)
+				{
+					totalWeight = normalWeight * depthWeight * varianceWeight;
+				}
+				else
+				{
+					totalWeight = normalWeight * depthWeight;
+				}
 				cumulativeKernelWeight += totalWeight;
 				denoisedOutput += (g_DenoiserInput[DTid + indexOffset] * totalWeight);
 
-				
 			}
 		}
 	}

@@ -14,7 +14,7 @@ struct SceneConstantBuffer
 	float4 samplingData;  // x reflections y samples z colorbleeding w frameNumber
 	float4 lightBools; // x == Shadows  on? y == Global illumination light on? z - Sky Light on? ,w - direct light on?
 	float4 textureMappings; // 0 - Normal maps 1 - Specular maps
-	float4 lightfallOff_AmbientIntensity_CosineSampling; 
+	float4 lightfallOff_AmbientIntensity_CosineSampling_DayNight; 
 };
 
 struct PostProcessData
@@ -43,7 +43,7 @@ struct DenoiserData
 	float2 invTextureDim;
 	float kernelSize;
 	int atrousStepSize;
-	float temporalFade;
+	float2 temporalFadeVarianceEstimation;
 };
 
 struct CompositorData

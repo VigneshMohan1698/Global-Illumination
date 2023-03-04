@@ -76,8 +76,8 @@ void main(uint2 DTid : SV_DispatchThreadID)
 	}
 	else if (compositorData.renderOutput == 9)
 	{
-		float2 v = abs(g_PartialDerivates[DTid]);
-		g_finalOutput[DTid] = float4(v.x, v.y, 0.0f, 1.0f);
+		g_finalOutput[DTid] = g_IndirectAlbedo[DTid];
+
 	}
 	//else if (compositorData.renderOutput == 9)
 	//{
@@ -93,7 +93,8 @@ void main(uint2 DTid : SV_DispatchThreadID)
 	}
 	else if (compositorData.renderOutput == 11)
 	{
-		g_finalOutput[DTid] = g_IndirectAlbedo[DTid];
+		float2 v = abs(g_PartialDerivates[DTid]);
+		g_finalOutput[DTid] = float4(v.x, v.y, 0.0f, 1.0f);
 	}
 	
 	
